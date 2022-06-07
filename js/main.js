@@ -27,12 +27,54 @@ class UI{
        }
     }
 
+    static displayBooks(){
+        const storeBooks = [
+            {
+                title:'Nigeria will be great',
+                author:'Peter',
+                isbn:'1234'
+            },
+            {
+                title:'Don\'t travel out',
+                author:'Grace',
+                isbn:'1235'
+            },
+            {
+                title:'Nigeria is One',
+                author:'Paul',
+                isbn:'1236'
+            }
+        ]
+
+        const books = storeBooks;
+        books.forEach((book)=> UI.addBookToList(book))
+
+    }
+
+    static addBookToList({title,author, isbn}){
+        // book.title
+        // book.author
+        // book.isbn
+       const lists = document.getElementsByClassName('booklist')[0]
+          const tr = document.createElement('tr');
+          const trContent = `
+             <td>${title}</td>
+            <td>${author}</td>
+            <td>${isbn}</td>
+            <td><button class="delete">X</button></td>
+          `
+        tr.innerHTML = trContent;
+    lists.appendChild(tr)
+
+    // add success alert
+
+    }
+
 }
 
 // Store class : Handles saving and retrieving data from storage
 class Store{
     // methods
-
     static getMode(){
         const mode = localStorage.getItem('light-mode')
         return mode
@@ -53,6 +95,10 @@ class Store{
 
 // Event: on page loaded
 document.addEventListener('DOMContentLoaded', (e) =>{
+//   handle display books on document load
+UI.displayBooks()
+
+
     // update the UI mode to what was the last mode for the user
     let isLightMode = Store.getMode()
     log(isLightMode)
@@ -66,3 +112,5 @@ document.addEventListener('DOMContentLoaded', (e) =>{
 // Events : listening to light mode switcher
 const darkModeSwicther = document.getElementsByClassName('light-mode-container')[0]
     darkModeSwicther.addEventListener('click', UI.lightModeHandler)
+
+ 
