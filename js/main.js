@@ -64,10 +64,52 @@ class UI{
             <td><button class="delete">X</button></td>
           `
         tr.innerHTML = trContent;
-    lists.appendChild(tr)
+        lists.appendChild(tr)
+        tr.getElementsByClassName('delete')[0].addEventListener('click', UI.deleteBookHandler )
 
     // add success alert
 
+    }
+
+    static addBookHandler(e){
+        e.preventDefault()
+        const title = document.getElementsByClassName('book-title')[0].value
+        const author = document.getElementsByClassName('book-author')[0].value
+        const isbn = document.getElementsByClassName('book-isbn')[0].value
+
+       if(!title || !author || !isbn){
+            UI.alertMsg('All fields are required!', 'danger')
+            return
+       }
+
+    const book = new Book(title, author, isbn)
+       UI. addBookToList(book)
+       UI.alertMsg('Book successfully added', 'success')
+    }
+
+    // delete book
+    static deleteBookHandler(e){
+            const btn = e.target;
+                 btn.parentElement.parentElement.remove();
+                 UI.alertMsg('Successfully Deleted', 'success')
+                 setTimeout(()=>{
+                    document.getElementsByClassName('alert')[0].remove()
+                 }, 3000)
+        
+    }
+
+    static alertMsg(message, className){
+        const div = document.createElement('div')
+             div.className = `alert alert-${className} `
+             const txt = `
+                <p>${message}</p>
+             `
+            div.innerHTML = txt
+
+            const container = document.getElementsByClassName('container')[0]
+           const tableContainer = document.getElementsByClassName('table-container')[0]
+
+           container.insertBefore(div, tableContainer)
     }
 
 }
@@ -112,5 +154,18 @@ UI.displayBooks()
 // Events : listening to light mode switcher
 const darkModeSwicther = document.getElementsByClassName('light-mode-container')[0]
     darkModeSwicther.addEventListener('click', UI.lightModeHandler)
+
+
+    // Events : Add book
+    document.getElementsByClassName('submit')[0].addEventListener('click', UI.addBookHandler)
+
+    // Events: Remove book from list
+const deleteBtn = document.getElementsByClassName('delete');
+// log(deleteBtn)
+for(let i=0; i<deleteBtn.length; i++){
+        const btnClicked = deleteBtn[i]
+        btnClicked.addEventListener('click', UI.deleteBookHandler)
+ }
+
 
  
