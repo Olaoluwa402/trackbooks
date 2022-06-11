@@ -1,6 +1,16 @@
 // Object Oriented programming
 const {log} = console
 
+
+class User{
+    static getUser(){
+        const url = 'https://jsonplaceholder.typicode.com/users'
+        fetch(url).then((response)=> response.json()).then((data)=> {
+          localStorage.setItem('users', JSON.stringify(data))
+        }).catch(err =>log(err))
+    }
+}
+
 // Book class : Handle Books
 class Book{
     constructor(title, author, isbn){
@@ -28,24 +38,7 @@ class UI{
     }
 
     static displayBooks(){
-        const storeBooks = [
-            {
-                title:'Nigeria will be great',
-                author:'Peter',
-                isbn:'1234'
-            },
-            {
-                title:'Don\'t travel out',
-                author:'Grace',
-                isbn:'1235'
-            },
-            {
-                title:'Nigeria is One',
-                author:'Paul',
-                isbn:'1236'
-            }
-        ]
-
+        const storeBooks = Store.getBooks()
         const books = storeBooks;
         books.forEach((book)=> UI.addBookToList(book))
 
@@ -60,7 +53,7 @@ class UI{
           const trContent = `
              <td>${title}</td>
             <td>${author}</td>
-            <td>${isbn}</td>
+            <td class='book-isbn'>${isbn}</td>
             <td><button class="delete">X</button></td>
           `
         tr.innerHTML = trContent;
@@ -84,6 +77,9 @@ class UI{
 
     const book = new Book(title, author, isbn)
        UI. addBookToList(book)
+       log(Store.getUsers())
+       Store.addBooks(book)
+       UI.clearFields()
        UI.alertMsg('Book successfully added', 'success')
     }
 
@@ -91,11 +87,11 @@ class UI{
     static deleteBookHandler(e){
             const btn = e.target;
                  btn.parentElement.parentElement.remove();
+            const isbn = btn.parentElement.parentElement.getElementsByClassName('book-isbn')[0].innerText
+    
+                 Store.removeBook(isbn)
                  UI.alertMsg('Successfully Deleted', 'success')
-                 setTimeout(()=>{
-                    document.getElementsByClassName('alert')[0].remove()
-                 }, 3000)
-        
+            
     }
 
     static alertMsg(message, className){
@@ -110,12 +106,63 @@ class UI{
            const tableContainer = document.getElementsByClassName('table-container')[0]
 
            container.insertBefore(div, tableContainer)
+
+           setTimeout(()=>{
+            document.getElementsByClassName('alert')[0].remove()
+         }, 3000)
+    }
+
+    static clearFields(){
+         document.getElementsByClassName('book-title')[0].value = ''
+        document.getElementsByClassName('book-author')[0].value = ''
+        document.getElementsByClassName('book-isbn')[0].value = ''
     }
 
 }
 
 // Store class : Handles saving and retrieving data from storage
 class Store{
+    // getBooks
+    static getBooks(){
+        let books = localStorage.getItem('books');
+        if(!books){
+            books = []
+        }else{
+            books = JSON.parse(books)
+    }
+    return books
+}
+
+  // getBooks
+  static getUsers(){
+    let users = localStorage.getItem('users');
+    if(!users){
+        users = []
+    }else{
+        users = JSON.parse(users)
+}
+return users
+}
+
+    // adding Book
+
+    static addBooks(book){
+        let books = Store.getBooks();
+        books.push(book)
+        localStorage.setItem('books', JSON.stringify(books))
+    }
+
+
+    // removing Book
+  static removeBook(isbn){
+        let books = Store.getBooks();
+        books.forEach((book, i) => {
+                if(book.isbn === isbn){
+                    books.splice(i, 1)
+                }
+        })
+        localStorage.setItem('books', JSON.stringify(books))
+  }
     // methods
     static getMode(){
         const mode = localStorage.getItem('light-mode')
@@ -137,6 +184,7 @@ class Store{
 
 // Event: on page loaded
 document.addEventListener('DOMContentLoaded', (e) =>{
+    User.getUser();
 //   handle display books on document load
 UI.displayBooks()
 
